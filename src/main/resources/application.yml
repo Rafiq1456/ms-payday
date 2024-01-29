@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 061832rafiq
+    url: jdbc:postgresql://localhost:5432/postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+  cloud:
+    function:
+      definition: sendMail;mailResult
+    stream:
+      binders:
+        kafka-local:
+          type: kafka
+          environment.spring.cloud.stream.kafka.binder:
+            brokers: localhost:9092
+            auto-create-topics: true
+            auto-add-partitions: true
+            min-partition-count: 1
+      bindings:
+        mailResult-in-0:
+          binder: kafka-local
+          contentType: application/json
+          group: payday-local
+          destination: e-mail
+        sendMail-out-0:
+          binder: kafka-local
+          contentType: application/json
+          destination: e-mail
+
+swagger:
+  host: localhost:8080
